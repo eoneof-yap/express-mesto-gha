@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const cardSchema = new mongoose.Schema({
-  name: {
+  title: {
     type: String,
     minlength: 2,
     maxlength: 30,
