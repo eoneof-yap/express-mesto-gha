@@ -1,24 +1,17 @@
-const express = require('express');
-const userRouter = require('express').Router();
+const cardsRouter = require('express').Router();
 
-userRouter.get('/cards', (req, res) => {
-  res.send(req.query);
-});
+const {
+  getAllCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  unlikeCard,
+} = require('../controllers/cards');
 
-userRouter.post('/cards', express.json(), (req, res) => {
-  res.send(req.query);
-});
+cardsRouter.get('/cards', getAllCards);
+cardsRouter.post('/cards', createCard);
+cardsRouter.get('/cards/:cardId', deleteCard);
+cardsRouter.patch('/cards/:cardId', likeCard);
+cardsRouter.patch('/cards/:cardId', unlikeCard);
 
-userRouter.delete('/cards/:cardId', (req, res) => {
-  res.send(req.params.cardId);
-});
-
-userRouter.put('/cards/:cardId/likes', (req, res) => {
-  res.send(req.params.cardId);
-});
-
-userRouter.delete('/cards/:cardId/likes', (req, res) => {
-  res.send(req.params.userId);
-});
-
-module.exports = userRouter;
+module.exports = cardsRouter;

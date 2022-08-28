@@ -6,7 +6,7 @@ const getAllUsers = (req, res) => {
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
-const getUser = (req, res) => {
+const getUserById = (req, res) => {
   const { id } = req.body;
   User.findById({ id })
     .then((user) => res.send({ data: user }))
@@ -36,7 +36,7 @@ const updateUserAvatar = (req, res) => {
 
 module.exports = {
   getAllUsers,
-  getUser,
+  getUserById,
   createUser,
   updateUser,
   updateUserAvatar,
