@@ -28,7 +28,7 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
-  Card.findOneAndDelete({ cardId })
+  Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
@@ -37,6 +37,10 @@ const deleteCard = (req, res) => {
       res.status(200).send(card);
     })
     .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        return;
+      }
       res
         .status(500)
         .send({ message: 'Сервер не смог обработать запрос', error: err.message });
