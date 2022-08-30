@@ -65,6 +65,10 @@ const updateUser = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
+      if (err._message === 'user validation failed') {
+        res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
+        return;
+      }
       if (err.kind === 'ObjectId') {
         res.status(400).send({ message: 'Неверный ID', error: err.message });
         return;
