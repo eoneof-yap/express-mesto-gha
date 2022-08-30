@@ -6,6 +6,7 @@ const { requestLogger } = require('./utils/loggers');
 const { tempAuth } = require('./utils/constants');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
+const notFoundRouter = require('./routers/404');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -20,6 +21,7 @@ app.use(tempAuth);
 
 app.use(userRouter); // app.js <= /routes <= /controllers <= /models
 app.use(cardsRouter);
+app.use(notFoundRouter);
 
 async function main() {
   try {

@@ -20,7 +20,7 @@ const getAllCards = (req, res) => {
 
 const createCard = (req, res) => {
   const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user.id })
+  Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -72,7 +72,7 @@ const likeCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send(card);
+      res.status(OK).send({ likes: card.likes });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -100,7 +100,7 @@ const unlikeCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send(card);
+      res.status(OK).send({ likes: card.likes });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
