@@ -36,7 +36,7 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      if (err._message === 'user validation failed') {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
@@ -65,7 +65,7 @@ const updateUser = (req, res) => {
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err._message === 'user validation failed') {
+      if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
