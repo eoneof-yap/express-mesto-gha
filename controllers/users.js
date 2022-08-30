@@ -10,10 +10,9 @@ const User = require('../models/user');
 const getAllUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(OK).send(users))
-    .catch((err) => {
+    .catch(() => {
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
-        error: err.message,
       });
     });
 };
@@ -37,7 +36,6 @@ const getUserById = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
-        error: err.message,
       });
     });
 };
@@ -55,7 +53,6 @@ const createUser = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
-        error: err.message,
       });
     });
 };
@@ -93,7 +90,6 @@ const updateUser = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
-        error: err.message,
       });
     });
 };
@@ -125,7 +121,6 @@ const updateUserAvatar = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
-        error: err.message,
       });
     });
 };
