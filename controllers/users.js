@@ -114,7 +114,7 @@ const updateUserAvatar = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(OK).send({ avatar: user.avatar });
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
