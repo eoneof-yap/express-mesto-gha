@@ -9,6 +9,7 @@ const Card = require('../models/card');
 
 const getAllCards = (req, res) => {
   Card.find({})
+    .populate('owner')
     .then((cards) => res.status(OK).send(cards))
     .catch((err) => {
       res.status(SERVER_ERROR).send({
@@ -21,6 +22,7 @@ const getAllCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
+    .populate('owner')
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -44,7 +46,7 @@ const deleteCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send(card);
+      res.status(OK).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -67,12 +69,13 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send({ likes: card.likes });
+      res.status(OK).send({ likes: card });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -95,12 +98,14 @@ const unlikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .populate(['owner', 'likes'])
+
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send({ likes: card.likes });
+      res.status(OK).send({ likes: card });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
