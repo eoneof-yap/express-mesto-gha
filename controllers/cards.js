@@ -27,8 +27,8 @@ const createCard = (req, res) => {
 };
 
 const deleteCard = (req, res) => {
-  const { id } = req.params;
-  Card.findOneAndDelete({ id })
+  const { cardId } = req.params;
+  Card.findOneAndDelete({ cardId })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Карточка не найдена' });
@@ -44,15 +44,15 @@ const deleteCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  const { id } = req.body;
-  Card.findByIdAndUpdate({ id })
+  const { cardId } = req.body;
+  Card.findByIdAndUpdate({ cardId })
     .then((card) => res.status(201).send(card))
     .catch((err) => res.status(500).send(err.message));
 };
 
 const unlikeCard = (req, res) => {
-  const { id } = req.body;
-  Card.findByIdAndUpdate({ id })
+  const { cardId } = req.body;
+  Card.findByIdAndUpdate({ cardId })
     .then((card) => res.status(200).send(card))
     .catch((err) => res.status(500).send(err.message));
 };
