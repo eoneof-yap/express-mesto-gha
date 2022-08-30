@@ -11,9 +11,8 @@ const getAllCards = (req, res) => {
 };
 
 const createCard = (req, res) => {
-  const userId = req.user;
   const { name, link } = req.body;
-  Card.create({ name, link, owner: userId })
+  Card.create({ name, link, owner: req.user.id })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -48,19 +47,46 @@ const deleteCard = (req, res) => {
 };
 
 const likeCard = (req, res) => {
-  const { cardId } = req.body;
-  Card.findByIdAndUpdate({ cardId })
-    .then((card) => res.status(201).send(card))
-    .catch((err) => res.status(500).send(err.message));
+  const { cardId } = req.params;
+  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        return;
+      }
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+    });
 };
 
 const unlikeCard = (req, res) => {
-  const { cardId } = req.body;
-  Card.findByIdAndUpdate({ cardId })
-    .then((card) => res.status(200).send(card))
-    .catch((err) => res.status(500).send(err.message));
+  const { cardId } = req.params;
+  Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        return;
+      }
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+    });
 };
-
 module.exports = {
   getAllCards,
   createCard,
