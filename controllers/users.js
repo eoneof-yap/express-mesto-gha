@@ -1,12 +1,20 @@
+const {
+  OK,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  SERVER_ERROR,
+} = require('../utils/constants');
 const User = require('../models/user');
 
 const getAllUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.status(OK).send(users))
     .catch((err) => {
-      res
-        .status(500)
-        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+      res.status(SERVER_ERROR).send({
+        message: 'Сервер не смог обработать запрос',
+        error: err.message,
+      });
     });
 };
 
@@ -15,34 +23,40 @@ const getUserById = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Неверный ID', error: err.message });
         return;
       }
-      res
-        .status(500)
-        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+      res.status(SERVER_ERROR).send({
+        message: 'Сервер не смог обработать запрос',
+        error: err.message,
+      });
     });
 };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(CREATED).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
-      res
-        .status(500)
-        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+      res.status(SERVER_ERROR).send({
+        message: 'Сервер не смог обработать запрос',
+        error: err.message,
+      });
     });
 };
 
@@ -59,23 +73,28 @@ const updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(200).send(user);
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
       if (err.kind === 'ObjectId') {
-        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Неверный ID', error: err.message });
         return;
       }
-      res
-        .status(500)
-        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+      res.status(SERVER_ERROR).send({
+        message: 'Сервер не смог обработать запрос',
+        error: err.message,
+      });
     });
 };
 
@@ -92,19 +111,22 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(200).send({ avatar: user.avatar });
+      res.status(OK).send({ avatar: user.avatar });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        res
+          .status(BAD_REQUEST)
+          .send({ message: 'Неверный ID', error: err.message });
         return;
       }
-      res
-        .status(500)
-        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+      res.status(SERVER_ERROR).send({
+        message: 'Сервер не смог обработать запрос',
+        error: err.message,
+      });
     });
 };
 
