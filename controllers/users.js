@@ -3,25 +3,31 @@ const User = require('../models/user');
 const getAllUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch((err) => res.status(500).send({ error: err.message }));
+    .catch((err) => {
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
+    });
 };
 
 const getUserById = (req, res) => {
-  const { id } = req.params;
-  User.findById(id)
+  const { userId } = req.params;
+  User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ error: 'Пользователь не найден' });
+        res.status(404).send({ message: 'Пользователь не найден' });
         return;
       }
       res.status(200).send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(400).send({ error: 'Неверный ID', message: err.message });
+        res.status(400).send({ message: 'Неверный ID', error: err.message });
         return;
       }
-      res.status(500).send({ message: err.message });
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
     });
 };
 
@@ -30,11 +36,13 @@ const createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
     .catch((err) => {
-      if (err._message === 'user validation failed') {
-        res.status(400).send({ error: 'Ошибка в запросе' });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
-      res.status(500).send({ message: err.message });
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
     });
 };
 
@@ -51,17 +59,23 @@ const updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ error: 'Пользователь не найден' });
+        res.status(404).send({ message: 'Пользователь не найден' });
         return;
       }
       res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        res.status(400).send({ error: 'Неверный ID', message: err.message });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
-      res.status(500).send({ message: err.message });
+      if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Неверный ID', error: err.message });
+        return;
+      }
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
     });
 };
 
@@ -78,17 +92,19 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(404).send({ error: 'Пользователь не найден' });
+        res.status(404).send({ message: 'Пользователь не найден' });
         return;
       }
       res.status(200).send({ avatar: user.avatar });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(400).send({ error: 'Неверный ID', message: err.message });
+        res.status(400).send({ message: 'Неверный ID', error: err.message });
         return;
       }
-      res.status(500).send({ message: err.message });
+      res
+        .status(500)
+        .send({ message: 'Сервер не смог обработать запрос', error: err.message });
     });
 };
 
