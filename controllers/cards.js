@@ -22,7 +22,6 @@ const getAllCards = (req, res) => {
 const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .populate('owner')
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -75,7 +74,7 @@ const likeCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send({ likes: card });
+      res.status(CREATED).send({ likes: card });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
