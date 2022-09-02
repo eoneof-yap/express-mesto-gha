@@ -64,7 +64,6 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .populate(['owner', 'likes'])
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
@@ -92,8 +91,6 @@ const unlikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .populate(['owner', 'likes'])
-
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
