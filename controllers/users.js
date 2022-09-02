@@ -1,5 +1,4 @@
 const {
-  OK,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -9,7 +8,7 @@ const User = require('../models/user');
 
 const getAllUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(OK).send(users))
+    .then((users) => res.send(users))
     .catch(() => {
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
@@ -25,7 +24,7 @@ const getUserById = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(OK).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -73,7 +72,7 @@ const updateUser = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(OK).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -110,7 +109,7 @@ const updateUserAvatar = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.status(OK).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
