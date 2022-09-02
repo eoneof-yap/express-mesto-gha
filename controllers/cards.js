@@ -1,5 +1,4 @@
 const {
-  OK,
   CREATED,
   BAD_REQUEST,
   NOT_FOUND,
@@ -10,7 +9,7 @@ const Card = require('../models/card');
 const getAllCards = (req, res) => {
   Card.find({})
     .populate('owner')
-    .then((cards) => res.status(OK).send(cards))
+    .then((cards) => res.send(cards))
     .catch(() => {
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
@@ -43,7 +42,7 @@ const deleteCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send({ message: 'Карточка удалена' });
+      res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -100,7 +99,7 @@ const unlikeCard = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.status(OK).send({ likes: card });
+      res.send({ likes: card });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
