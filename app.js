@@ -10,7 +10,7 @@ const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
 const notFoundRouter = require('./routers/404');
 
-const { PORT = 3000, DB_ADDRESS } = process.env;
+const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
 const app = express();
 
