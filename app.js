@@ -20,8 +20,6 @@ app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(express.urlencoded({ extended: true }));
 
 app.use(publicRouter);
-app.use(notFoundRouter);
-
 app.use(authorize);
 
 app.use(userRouter); // app.js <= /routes <= /controllers <= /models
