@@ -21,7 +21,7 @@ const createUser = (req, res) => {
       email,
       password: hash,
     })
-      .then((user) => res.status(CREATED).send({ _id: user._id, email: user.email }))
+      .then((user) => res.status(CREATED).send(user))
       .catch((err) => {
         if (err.name === 'ValidationError') {
           res.status(BAD_REQUEST).send({ message: 'Ошибка в запросе', error: err.message });
@@ -45,6 +45,7 @@ const createUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
