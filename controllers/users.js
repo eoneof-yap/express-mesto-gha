@@ -1,4 +1,8 @@
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+const { JWT_SECRET } = process.env;
 
 const {
   CREATED,
@@ -146,7 +150,10 @@ const updateUserAvatar = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
-    .then((user) => user)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: 3600 });
+      res.send({ token });
+    })
     .catch((err) => {
       res.status(UNAUTHORIZED).send({
         message: err.message,
