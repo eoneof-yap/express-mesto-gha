@@ -7,9 +7,11 @@ const getAllCards = (req, res) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send(cards))
-    .catch(() => {
+    .catch((err) => {
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
+        // TODO: remove error messages in production mode
+        error: err.message,
       });
     });
 };
@@ -25,6 +27,7 @@ const createCard = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
+        error: err.message,
       });
     });
 };
@@ -46,6 +49,7 @@ const deleteCard = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
+        error: err.message,
       });
     });
 };
@@ -67,6 +71,7 @@ const likeCard = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
+        error: err.message,
       });
     });
 };
@@ -88,6 +93,7 @@ const unlikeCard = (req, res) => {
       }
       res.status(SERVER_ERROR).send({
         message: 'Сервер не смог обработать запрос',
+        error: err.message,
       });
     });
 };
