@@ -1,3 +1,4 @@
+require('dotenv').config();
 const process = require('process');
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,8 +8,9 @@ const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
 const notFoundRouter = require('./routers/404');
 
+const { PORT = 3000, DB_ADDRESS } = process.env;
+
 const app = express();
-const { PORT = 3000 } = process.env;
 
 app.use(requestLogger);
 
@@ -30,7 +32,7 @@ app.use(notFoundRouter);
 
 async function main() {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+    await mongoose.connect(DB_ADDRESS);
     console.log('База данных подключена');
     await app.listen(PORT);
     console.log(`Сервер запущен на ${PORT} порту`);
