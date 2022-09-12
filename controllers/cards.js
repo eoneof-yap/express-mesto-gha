@@ -1,8 +1,5 @@
 const {
-  CREATED,
-  BAD_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
+  CREATED, BAD_REQUEST, NOT_FOUND, SERVER_ERROR,
 } = require('../utils/constants');
 const Card = require('../models/card');
 
@@ -23,9 +20,7 @@ const createCard = (req, res) => {
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Ошибка в запросе', error: err.message });
+        res.status(BAD_REQUEST).send({ message: 'Ошибка в запросе', error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
@@ -46,9 +41,7 @@ const deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Неверный ID', error: err.message });
+        res.status(BAD_REQUEST).send({ message: 'Неверный ID', error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
@@ -59,11 +52,7 @@ const deleteCard = (req, res) => {
 
 const likeCard = (req, res) => {
   const { cardId } = req.params;
-  Card.findByIdAndUpdate(
-    cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
@@ -73,9 +62,7 @@ const likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Неверный ID', error: err.message });
+        res.status(BAD_REQUEST).send({ message: 'Неверный ID', error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
@@ -86,11 +73,7 @@ const likeCard = (req, res) => {
 
 const unlikeCard = (req, res) => {
   const { cardId } = req.params;
-  Card.findByIdAndUpdate(
-    cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
@@ -100,9 +83,7 @@ const unlikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Неверный ID', error: err.message });
+        res.status(BAD_REQUEST).send({ message: 'Неверный ID', error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
