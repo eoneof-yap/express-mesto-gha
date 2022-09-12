@@ -92,7 +92,10 @@ const updateUser = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.send(user);
+      res.send({
+        name: user.name,
+        about: user.about,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -126,7 +129,7 @@ const updateUserAvatar = (req, res) => {
         res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
-      res.send(user);
+      res.send({ avatar: user.avatar });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
