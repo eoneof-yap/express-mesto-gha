@@ -145,20 +145,8 @@ const updateUserAvatar = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      return bcrypt.compare(password, user.password);
-    })
-    .then((match) => {
-      if (!match) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-      // TODO: send token
-      return res.send({ message: 'token' });
-    })
+  return User.findUserByCredentials(email, password)
+    .then((user) => user)
     .catch((err) => {
       res.status(UNAUTHORIZED).send({
         message: err.message,
