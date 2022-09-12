@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const { requestLogger } = require('./utils/loggers');
+const publicRouter = require('./routers/auth');
+const authorize = require('./middlewares/auth');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
 const notFoundRouter = require('./routers/404');
@@ -17,14 +19,10 @@ app.use(requestLogger);
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(express.urlencoded({ extended: true }));
 
-// hardcoded user id
-app.use((req, res, next) => {
-  req.user = {
-    _id: '630d25a903576ab62032ca24',
-  };
+app.use(publicRouter);
+app.use(notFoundRouter);
 
-  next();
-});
+app.use(authorize);
 
 app.use(userRouter); // app.js <= /routes <= /controllers <= /models
 app.use(cardsRouter);
