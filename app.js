@@ -31,12 +31,12 @@ app.use(notFoundRouter);
 async function main() {
   try {
     await mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-    console.log('Database connected');
+    console.log('База данных подключена');
     await app.listen(PORT);
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Сервер запущен на ${PORT} порту`);
   } catch (err) {
-    console.error('Database not connected \nERROR:', err);
-    console.error('Server not started');
+    console.log('Не удалось подключить базу данных \nERROR:', err);
+    console.log('Сервер не запустился');
   }
 }
 
