@@ -3,7 +3,7 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
-  UNAUTHORIZED,
+  FORBIDDEN,
   SERVER_ERROR_TEXT,
   REQUEST_ERROR_TEXT,
   CARD_NOT_FOUND_TEXT,
@@ -52,7 +52,7 @@ const deleteCard = (req, res) => {
         return;
       }
       if (userId !== card.owner.toString()) {
-        res.status(UNAUTHORIZED).send({ message: CARD_RESTRICTED_TEXT });
+        res.status(FORBIDDEN).send({ message: CARD_RESTRICTED_TEXT });
         return;
       }
       card.delete().then(res.send({ message: CARD_DELETED_TEXT }));

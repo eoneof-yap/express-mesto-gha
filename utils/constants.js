@@ -2,11 +2,12 @@
 const CREATED = 201;
 const BAD_REQUEST = 400;
 const UNAUTHORIZED = 401;
+const FORBIDDEN = 403;
 const NOT_FOUND = 404;
 const CONFLICT = 409;
 const SERVER_ERROR = 500;
 
-// USer defaults
+// User defaults
 const DEFAULT_NAME = 'Жак-Ив Кусто';
 const DEFAULT_ABOUT = 'Исследователь';
 const DEFAULT_AVATAR = 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png';
@@ -15,7 +16,7 @@ const DEFAULT_AVATAR = 'https://pictures.s3.yandex.net/resources/jacques-coustea
 const DB_CONNECTED_TEXT = 'База данных подключена';
 const SERVER_START_FAILED_TEXT = 'Сервер не запустился';
 const DB_NOT_CONNECTED_TEXT = 'Не удалось подключиться к базе данных';
-const SERVER_STARTED_TEXT = 'Сервер запущен на порту ';
+const SERVER_STARTED_TEXT = 'Сервер запущен на порту';
 const SERVER_ERROR_TEXT = 'Сервер не смог обработать запрос';
 const AUTH_REQUIRED_TEXT = 'Необходима авторизация';
 const PATH_NOT_FOUND_TEXT = 'Путь не найден';
@@ -30,12 +31,14 @@ const WRONG_GREDENTIALS_TEXT = 'Неправильные почта или па�
 
 // Misc
 const TOKEN_PREFIX = 'Bearer ';
-const SALT_ROUDNS = 10;
+const SALT_ROUNDS = 10;
 const JWT_EXPIRATION_TIMEOUT = '7d';
+const DB_DUPLICATE_KEY_CODE = 11000;
 
 module.exports = {
   CREATED,
   BAD_REQUEST,
+  FORBIDDEN,
   NOT_FOUND,
   SERVER_ERROR,
   CONFLICT,
@@ -62,6 +65,7 @@ module.exports = {
   WRONG_GREDENTIALS_TEXT,
 
   TOKEN_PREFIX,
-  SALT_ROUDNS,
+  SALT_ROUNDS,
   JWT_EXPIRATION_TIMEOUT,
+  DB_DUPLICATE_KEY_CODE,
 };
