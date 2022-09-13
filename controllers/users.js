@@ -12,7 +12,13 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
+  CONFLICT,
   UNAUTHORIZED,
+  SERVER_ERROR_TEXT,
+  USER_NOT_FOUND_TEXT,
+  WRONG_ID_TEXT,
+  REQUEST_ERROR_TEXT,
+  EMAIL_EXIST_TEXT,
 } = require('../utils/constants');
 const User = require('../models/user');
 
@@ -21,7 +27,7 @@ const getAllUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
+        message: SERVER_ERROR_TEXT,
         error: err.message,
       });
     });
@@ -32,18 +38,18 @@ const getUserById = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
         return;
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: 'Неверный ID', error: err.message });
+        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
+        message: SERVER_ERROR_TEXT,
         error: err.message,
       });
     });
@@ -66,20 +72,20 @@ const createUser = (req, res) => {
         if (err.name === 'ValidationError') {
           res
             .status(BAD_REQUEST)
-            .send({ message: 'Ошибка в запросе', error: err.message });
+            .send({ message: REQUEST_ERROR_TEXT, error: err.message });
           return;
         }
 
         if (err.code === 11000) {
-          res.status(BAD_REQUEST).send({
-            message: 'Пользователь с таким email уже существует',
+          res.status(CONFLICT).send({
+            message: EMAIL_EXIST_TEXT,
             error: err.message,
           });
           return;
         }
 
         res.status(SERVER_ERROR).send({
-          message: 'Сервер не смог обработать запрос',
+          message: SERVER_ERROR_TEXT,
           error: err.message,
         });
       });
@@ -99,7 +105,7 @@ const updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
         return;
       }
       res.send({
@@ -109,15 +115,15 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Ошибка в запросе', error: err.message });
+        res.status(BAD_REQUEST).send({ message: REQUEST_ERROR_TEXT, error: err.message });
         return;
       }
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: 'Неверный ID', error: err.message });
+        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
+        message: SERVER_ERROR_TEXT,
         error: err.message,
       });
     });
@@ -136,18 +142,18 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
         return;
       }
       res.send({ avatar: user.avatar });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: 'Неверный ID', error: err.message });
+        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
         return;
       }
       res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
+        message: SERVER_ERROR_TEXT,
         error: err.message,
       });
     });

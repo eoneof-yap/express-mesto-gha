@@ -12,6 +12,12 @@ const {
   BAD_REQUEST,
   SERVER_ERROR,
   UNAUTHORIZED,
+  CONFLICT,
+  SALT_ROUDNS,
+  EMAIL_EXIST_TEXT,
+  SERVER_ERROR_TEXT,
+  JWT_EXPIRATION_TIMEOUT,
+  REQUEST_ERROR_TEXT,
 } = require('../utils/constants');
 const User = require('../models/user');
 
@@ -19,7 +25,7 @@ const createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  bcrypt.hash(password, 10).then((hash) => {
+  bcrypt.hash(password, SALT_ROUDNS).then((hash) => {
     User.create({
       name,
       about,
@@ -32,20 +38,20 @@ const createUser = (req, res) => {
         if (err.name === 'ValidationError') {
           res
             .status(BAD_REQUEST)
-            .send({ message: 'Ошибка в запросе', error: err.message });
+            .send({ message: REQUEST_ERROR_TEXT, error: err.message });
           return;
         }
 
         if (err.code === 11000) {
-          res.status(BAD_REQUEST).send({
-            message: 'Пользователь с таким email уже существует',
+          res.status(CONFLICT).send({
+            message: EMAIL_EXIST_TEXT,
             error: err.message,
           });
           return;
         }
 
         res.status(SERVER_ERROR).send({
-          message: 'Сервер не смог обработать запрос',
+          message: SERVER_ERROR_TEXT,
           error: err.message,
         });
       });
@@ -57,7 +63,9 @@ const login = (req, res) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: JWT_EXPIRATION_TIMEOUT,
+      });
       res.send({ token });
     })
     .catch((err) => {

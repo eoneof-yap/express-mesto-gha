@@ -9,6 +9,7 @@ const authorize = require('./middlewares/auth');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
 const notFoundRouter = require('./routers/404');
+const { DB_CONNECTED_TEXT, SERVER_STARTED_TEXT } = require('./utils/constants');
 
 const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
@@ -29,12 +30,12 @@ app.use(notFoundRouter);
 async function main() {
   try {
     await mongoose.connect(DB_ADDRESS);
-    console.log('База данных подключена');
+    console.log(DB_CONNECTED_TEXT);
     await app.listen(PORT);
-    console.log(`Сервер запущен на ${PORT} порту`);
+    console.log(`${SERVER_STARTED_TEXT} ${PORT}`);
   } catch (err) {
-    console.log('Не удалось подключить базу данных \nERROR:', err);
-    console.log('Сервер не запустился');
+    console.log(DB_NOT_CONNECTED_TEXT, err);
+    console.log(SERVER_START_FAILED_TEXT);
   }
 }
 
