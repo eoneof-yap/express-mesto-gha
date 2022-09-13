@@ -2,10 +2,16 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { JWT_SECRET } = process.env;
+const {
+  // TODO: remove secter value
+  JWT_SECRET = '41f2274f52d9ad3f094d4378b763b7ad2e870e4a1a283c59c1d91a0a0336b026',
+} = process.env;
 
 const {
-  CREATED, BAD_REQUEST, SERVER_ERROR, UNAUTHORIZED,
+  CREATED,
+  BAD_REQUEST,
+  SERVER_ERROR,
+  UNAUTHORIZED,
 } = require('../utils/constants');
 const User = require('../models/user');
 
@@ -24,14 +30,17 @@ const createUser = (req, res) => {
       .then((user) => res.status(CREATED).send(user))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          res.status(BAD_REQUEST).send({ message: 'Ошибка в запросе', error: err.message });
+          res
+            .status(BAD_REQUEST)
+            .send({ message: 'Ошибка в запросе', error: err.message });
           return;
         }
 
         if (err.code === 11000) {
-          res
-            .status(BAD_REQUEST)
-            .send({ message: 'Пользователь с таким email уже существует', error: err.message });
+          res.status(BAD_REQUEST).send({
+            message: 'Пользователь с таким email уже существует',
+            error: err.message,
+          });
           return;
         }
 
@@ -45,7 +54,7 @@ const createUser = (req, res) => {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
