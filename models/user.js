@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
 const {
   DEFAULT_NAME,
@@ -27,11 +28,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     default: DEFAULT_AVATAR,
+    validate: {
+      validator(avatar) {
+        return validator.isURL(avatar);
+      },
+    },
   },
   email: {
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator(email) {
+        return validator.isEmail(email);
+      },
+    },
   },
   password: {
     type: String,
