@@ -1,5 +1,9 @@
 const {
-  CREATED, BAD_REQUEST, NOT_FOUND, SERVER_ERROR,
+  CREATED,
+  BAD_REQUEST,
+  NOT_FOUND,
+  SERVER_ERROR,
+  UNAUTHORIZED,
 } = require('../utils/constants');
 const Card = require('../models/card');
 
@@ -34,13 +38,18 @@ const createCard = (req, res) => {
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
-  Card.findByIdAndRemove(cardId)
+  const userId = req.user._id;
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
-      res.send({ message: 'Карточка удалена' });
+      if (userId !== card.owner.toString()) {
+        res.status(UNAUTHORIZED).send({ message: 'Нелья удалять чужие карточки' });
+        return;
+      }
+      card.delete().then(res.send({ message: 'Карточка удалена' }));
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
