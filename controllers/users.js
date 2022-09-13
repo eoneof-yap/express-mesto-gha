@@ -8,18 +8,14 @@ const {
 } = process.env;
 
 const {
-  CREATED,
   BAD_REQUEST,
   NOT_FOUND,
   SERVER_ERROR,
-  CONFLICT,
   UNAUTHORIZED,
   SERVER_ERROR_TEXT,
   USER_NOT_FOUND_TEXT,
   WRONG_ID_TEXT,
   REQUEST_ERROR_TEXT,
-  EMAIL_EXIST_TEXT,
-  DB_DUPLICATE_KEY_CODE,
 } = require('../utils/constants');
 const User = require('../models/user');
 
@@ -56,39 +52,26 @@ const getUserById = (req, res) => {
     });
 };
 
-const createUser = (req, res) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
-  bcrypt.hash(password, 10).then((hash) => {
-    User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
+const getCurrentUser = (req, res) => {
+  const id = req.user._id;
+  User.findById(id)
+    .then((user) => {
+      if (!user) {
+        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
+        return;
+      }
+      res.send(user);
     })
-      .then((user) => res.status(CREATED).send(user))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(BAD_REQUEST).send({ message: REQUEST_ERROR_TEXT, error: err.message });
-          return;
-        }
-
-        if (err.code === DB_DUPLICATE_KEY_CODE) {
-          res.status(CONFLICT).send({
-            message: EMAIL_EXIST_TEXT,
-            error: err.message,
-          });
-          return;
-        }
-
-        res.status(SERVER_ERROR).send({
-          message: SERVER_ERROR_TEXT,
-          error: err.message,
-        });
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
+        return;
+      }
+      res.status(SERVER_ERROR).send({
+        message: SERVER_ERROR_TEXT,
+        error: err.message,
       });
-  });
+    });
 };
 
 const updateUser = (req, res) => {
@@ -175,7 +158,7 @@ const login = (req, res) => {
 module.exports = {
   getAllUsers,
   getUserById,
-  createUser,
+  getCurrentUser,
   updateUser,
   updateUserAvatar,
   login,
