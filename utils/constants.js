@@ -20,7 +20,7 @@ const SERVER_STARTED_TEXT = 'Сервер запущен на порту';
 const SERVER_ERROR_TEXT = 'Сервер не смог обработать запрос';
 const AUTH_REQUIRED_TEXT = 'Необходима авторизация';
 const PATH_NOT_FOUND_TEXT = 'Путь не найден';
-const REQUEST_ERROR_TEXT = 'Ошибка в запросе';
+const BAD_REQUEST_TEXT = 'Ошибка в запросе';
 const CARD_NOT_FOUND_TEXT = 'Карточка не найдена';
 const CARD_RESTRICTED_TEXT = 'Нельзя удалять чужие карточки';
 const CARD_DELETED_TEXT = 'Карточка удалена';
@@ -55,7 +55,7 @@ module.exports = {
   SERVER_ERROR_TEXT,
   AUTH_REQUIRED_TEXT,
   PATH_NOT_FOUND_TEXT,
-  REQUEST_ERROR_TEXT,
+  REQUEST_ERROR_TEXT: BAD_REQUEST_TEXT,
   CARD_NOT_FOUND_TEXT,
   CARD_RESTRICTED_TEXT,
   CARD_DELETED_TEXT,

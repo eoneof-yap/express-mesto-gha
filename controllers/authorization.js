@@ -9,20 +9,17 @@ const {
 
 const {
   CREATED,
-  BAD_REQUEST,
-  SERVER_ERROR,
-  UNAUTHORIZED,
-  CONFLICT,
   SALT_ROUNDS,
   EMAIL_EXIST_TEXT,
-  SERVER_ERROR_TEXT,
   JWT_EXPIRATION_TIMEOUT,
-  REQUEST_ERROR_TEXT,
+  BAD_REQUEST_TEXT,
   DB_DUPLICATE_KEY_CODE,
 } = require('../utils/constants');
 const User = require('../models/user');
+const ValidationError = require('../errors/ValidationError');
+const ConflictError = require('../errors/ConflictError');
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -37,27 +34,20 @@ const createUser = (req, res) => {
       .then((user) => res.status(CREATED).send(user))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          res.status(BAD_REQUEST).send({ message: REQUEST_ERROR_TEXT, error: err.message });
+          next(new ValidationError(BAD_REQUEST_TEXT));
           return;
         }
 
         if (err.code === DB_DUPLICATE_KEY_CODE) {
-          res.status(CONFLICT).send({
-            message: EMAIL_EXIST_TEXT,
-            error: err.message,
-          });
+          next(new ConflictError(EMAIL_EXIST_TEXT));
           return;
         }
-
-        res.status(SERVER_ERROR).send({
-          message: SERVER_ERROR_TEXT,
-          error: err.message,
-        });
+        next(err);
       });
   });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -68,9 +58,7 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
-      res.status(UNAUTHORIZED).send({
-        message: err.message,
-      });
+      next(err);
     });
 };
 

@@ -5,12 +5,3 @@ module.exports = (req, res, next) => {
 
   next();
 };
-
-// class NotFoundError extends Error {
-//   constructor(message) {
-//     super(message);
-//     this.statusCode = NOT_FOUND;
-//   }
-// }
-
-// module.exports = NotFoundError;

@@ -6,10 +6,10 @@ const mongoose = require('mongoose');
 const { requestLogger } = require('./utils/loggers');
 const globalErrorHandler = require('./middlewares/globalErrorHandler');
 const publicRouter = require('./routers/auth');
-const authorize = require('./middlewares/auth');
+const authorize = require('./middlewares/authorize');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
-const notFoundError = require('./errors/not-found-error');
+const notFoundError = require('./errors/notFoundError');
 const {
   DB_CONNECTED_TEXT,
   SERVER_STARTED_TEXT,
