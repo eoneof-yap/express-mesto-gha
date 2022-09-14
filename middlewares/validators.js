@@ -9,7 +9,7 @@ const avatarConfig = Joi.string().regex(urlRegex);
 const emailConfig = Joi.string().required().email();
 const passwordConfig = Joi.string().required().min(8);
 const cardNameConfig = Joi.string().required().min(2).max(30);
-const linkConfig = Joi.string().required().regex(urlRegex);
+const urlConfig = Joi.string().required().regex(urlRegex);
 
 const validateId = celebrate({
   params: Joi.object().keys({
@@ -43,7 +43,7 @@ const validateUserAvatar = celebrate({
 const validateCardData = celebrate({
   body: Joi.object().keys({
     name: cardNameConfig,
-    link: linkConfig,
+    link: urlConfig,
   }),
 });
 

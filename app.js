@@ -4,11 +4,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const { requestLogger } = require('./utils/loggers');
+const globalErrorHandler = require('./middlewares/globalErrorHandler');
 const publicRouter = require('./routers/auth');
 const authorize = require('./middlewares/auth');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
-const notFoundRouter = require('./routers/404');
+const notFoundError = require('./errors/not-found-error');
 const {
   DB_CONNECTED_TEXT,
   SERVER_STARTED_TEXT,
@@ -30,7 +31,9 @@ app.use(authorize);
 
 app.use(userRouter); // app.js <= /routes <= /controllers <= /models
 app.use(cardsRouter);
-app.use(notFoundRouter);
+
+app.use(notFoundError);
+app.use(globalErrorHandler);
 
 async function main() {
   try {
