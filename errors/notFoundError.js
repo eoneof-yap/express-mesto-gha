@@ -1,7 +1,10 @@
-const { NOT_FOUND, PATH_NOT_FOUND_TEXT } = require('../utils/constants');
+const { NOT_FOUND } = require('../utils/constants');
 
-module.exports = (req, res, next) => {
-  res.status(NOT_FOUND).send({ message: PATH_NOT_FOUND_TEXT });
+class NotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.statusCode = NOT_FOUND;
+  }
+}
 
-  next();
-};
+module.exports = NotFoundError;

@@ -9,7 +9,7 @@ const publicRouter = require('./routers/auth');
 const authorize = require('./middlewares/authorize');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
-const notFoundError = require('./errors/notFoundError');
+const notFoundError = require('./controllers/notFound');
 const {
   DB_CONNECTED_TEXT,
   SERVER_STARTED_TEXT,

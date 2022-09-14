@@ -16,7 +16,7 @@ const {
   DB_DUPLICATE_KEY_CODE,
 } = require('../utils/constants');
 const User = require('../models/user');
-const ValidationError = require('../errors/ValidationError');
+const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 
 const createUser = (req, res, next) => {
@@ -34,7 +34,7 @@ const createUser = (req, res, next) => {
       .then((user) => res.status(CREATED).send(user))
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          next(new ValidationError(BAD_REQUEST_TEXT));
+          next(new BadRequestError(BAD_REQUEST_TEXT));
           return;
         }
 
