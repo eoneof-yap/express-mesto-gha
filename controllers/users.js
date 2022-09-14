@@ -1,79 +1,70 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
+const User = require('../models/user');
+
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+
 const {
   // TODO: remove secret value
   JWT_SECRET = '41f2274f52d9ad3f094d4378b763b7ad2e870e4a1a283c59c1d91a0a0336b026',
 } = process.env;
 
 const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
   UNAUTHORIZED,
-  SERVER_ERROR_TEXT,
   USER_NOT_FOUND_TEXT,
   WRONG_ID_TEXT,
   REQUEST_ERROR_TEXT,
 } = require('../utils/constants');
-const User = require('../models/user');
 
-const getAllUsers = (req, res) => {
+const getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch((err) => {
-      res.status(SERVER_ERROR).send({
-        message: SERVER_ERROR_TEXT,
-        error: err.message,
-      });
+      next(err);
     });
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { userId } = req.params;
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
         return;
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
+        next(new BadRequestError(WRONG_ID_TEXT));
         return;
       }
-      res.status(SERVER_ERROR).send({
-        message: SERVER_ERROR_TEXT,
-        error: err.message,
-      });
+      next(err);
     });
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const id = req.user._id;
   User.findById(id)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
         return;
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
+        next(new BadRequestError(WRONG_ID_TEXT));
         return;
       }
-      res.status(SERVER_ERROR).send({
-        message: SERVER_ERROR_TEXT,
-        error: err.message,
-      });
+      next(err);
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const id = req.user._id;
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -86,7 +77,7 @@ const updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
         return;
       }
       res.send({
@@ -96,21 +87,18 @@ const updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: REQUEST_ERROR_TEXT, error: err.message });
+        next(new BadRequestError(REQUEST_ERROR_TEXT));
         return;
       }
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
+        next(new BadRequestError(WRONG_ID_TEXT));
         return;
       }
-      res.status(SERVER_ERROR).send({
-        message: SERVER_ERROR_TEXT,
-        error: err.message,
-      });
+      next(err);
     });
 };
 
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const id = req.user._id;
   const { avatar } = req.body;
   User.findByIdAndUpdate(
@@ -123,24 +111,21 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: USER_NOT_FOUND_TEXT });
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
         return;
       }
       res.send({ avatar: user.avatar });
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(BAD_REQUEST).send({ message: WRONG_ID_TEXT, error: err.message });
+        next(new BadRequestError(WRONG_ID_TEXT));
         return;
       }
-      res.status(SERVER_ERROR).send({
-        message: SERVER_ERROR_TEXT,
-        error: err.message,
-      });
+      next(err);
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -151,6 +136,7 @@ const login = (req, res) => {
       res.status(UNAUTHORIZED).send({
         message: err.message,
       });
+      next(err);
     });
 };
 
