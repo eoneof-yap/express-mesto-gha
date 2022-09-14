@@ -1,21 +1,12 @@
-require('dotenv').config();
-const jwt = require('jsonwebtoken');
-
 const User = require('../models/user');
 
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 
 const {
-  // TODO: remove secret value
-  JWT_SECRET = '41f2274f52d9ad3f094d4378b763b7ad2e870e4a1a283c59c1d91a0a0336b026',
-} = process.env;
-
-const {
-  UNAUTHORIZED,
   USER_NOT_FOUND_TEXT,
   WRONG_ID_TEXT,
-  REQUEST_ERROR_TEXT,
+  BAD_REQUEST_TEXT,
 } = require('../utils/constants');
 
 const getAllUsers = (req, res, next) => {
@@ -27,19 +18,17 @@ const getAllUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  const { userId } = req.params;
-  User.findById(userId)
+  const { id } = req.params;
+  User.findById(id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError(USER_NOT_FOUND_TEXT));
-        return;
+        throw new NotFoundError(USER_NOT_FOUND_TEXT);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         next(new BadRequestError(WRONG_ID_TEXT));
-        return;
       }
       next(err);
     });
@@ -50,15 +39,13 @@ const getCurrentUser = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        next(new NotFoundError(USER_NOT_FOUND_TEXT));
-        return;
+        throw new NotFoundError(USER_NOT_FOUND_TEXT);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         next(new BadRequestError(WRONG_ID_TEXT));
-        return;
       }
       next(err);
     });
@@ -87,7 +74,7 @@ const updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(REQUEST_ERROR_TEXT));
+        next(new BadRequestError(BAD_REQUEST_TEXT));
         return;
       }
       if (err.kind === 'ObjectId') {
@@ -117,25 +104,14 @@ const updateUserAvatar = (req, res, next) => {
       res.send({ avatar: user.avatar });
     })
     .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(BAD_REQUEST_TEXT));
+        return;
+      }
       if (err.kind === 'ObjectId') {
         next(new BadRequestError(WRONG_ID_TEXT));
         return;
       }
-      next(err);
-    });
-};
-
-const login = (req, res, next) => {
-  const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: 3600 });
-      res.send({ token });
-    })
-    .catch((err) => {
-      res.status(UNAUTHORIZED).send({
-        message: err.message,
-      });
       next(err);
     });
 };
@@ -146,5 +122,4 @@ module.exports = {
   getCurrentUser,
   updateUser,
   updateUserAvatar,
-  login,
 };

@@ -35,6 +35,6 @@
 | PATCH  | users/me/avatar      | Обновляет аватар                          |
 | GET    | /cards               | Возвращает все карточки                   |
 | POST   | /cards               | Создает карточку                          |
-| DELETE | /cards/:cardId       | удаляет карточку по идентификатору        |
-| PUT    | /cards/:cardId/likes | поставить лайк                            |
-| DELETE | /cards/:cardId/likes | убрать лайк с карточки                    |
+| DELETE | /cards/:id       | удаляет карточку по идентификатору        |
+| PUT    | /cards/:id/likes | поставить лайк                            |
+| DELETE | /cards/:id/likes | убрать лайк с карточки                    |

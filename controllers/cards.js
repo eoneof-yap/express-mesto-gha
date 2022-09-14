@@ -28,8 +28,7 @@ const createCard = (req, res, next) => {
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError(BAD_REQUEST_TEXT));
-        return;
+        throw new BadRequestError(BAD_REQUEST_TEXT);
       }
 
       next(err);
@@ -37,17 +36,14 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCard = (req, res, next) => {
-  const { cardId } = req.params;
-  const userId = req.user._id;
-  Card.findById(cardId)
+  const { id } = req.params;
+  Card.findById(id)
     .then((card) => {
       if (!card) {
-        next(new NotFoundError(CARD_NOT_FOUND_TEXT));
-        return;
+        throw new NotFoundError(CARD_NOT_FOUND_TEXT);
       }
-      if (userId !== card.owner.toString()) {
-        next(new ForbiddenError(CARD_RESTRICTED_TEXT));
-        return;
+      if (req.user._id !== card.owner.toString()) {
+        throw new ForbiddenError(CARD_RESTRICTED_TEXT);
       }
       card.delete().then(res.send({ message: CARD_DELETED_TEXT }));
     })
@@ -62,8 +58,8 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  const { cardId } = req.params;
-  Card.findByIdAndUpdate(cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  const { id } = req.params;
+  Card.findByIdAndUpdate(id, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
         next(new NotFoundError(CARD_NOT_FOUND_TEXT));
@@ -81,8 +77,8 @@ const likeCard = (req, res, next) => {
 };
 
 const unlikeCard = (req, res, next) => {
-  const { cardId } = req.params;
-  Card.findByIdAndUpdate(cardId, { $pull: { likes: req.user._id } }, { new: true })
+  const { id } = req.params;
+  Card.findByIdAndUpdate(id, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
         next(new NotFoundError(CARD_NOT_FOUND_TEXT));

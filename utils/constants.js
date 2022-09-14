@@ -25,9 +25,10 @@ const CARD_NOT_FOUND_TEXT = 'Карточка не найдена';
 const CARD_RESTRICTED_TEXT = 'Нельзя удалять чужие карточки';
 const CARD_DELETED_TEXT = 'Карточка удалена';
 const WRONG_ID_TEXT = 'Неверный идентификатор';
-const EMAIL_EXIST_TEXT = 'Пользователь с таким email уже существует';
+const EMAIL_EXIST_TEXT = 'Пользователь с такой почтой уже существует';
 const USER_NOT_FOUND_TEXT = 'Пользователь не найден';
-const WRONG_GREDENTIALS_TEXT = 'Неправильные почта или пароль';
+const WRONG_CREDENTIALS_TEXT = 'Неправильные почта или пароль';
+const TOKEN_EXPIRED_TEXT = 'Токен недействителен';
 
 // Misc
 const TOKEN_PREFIX = 'Bearer ';
@@ -55,14 +56,15 @@ module.exports = {
   SERVER_ERROR_TEXT,
   AUTH_REQUIRED_TEXT,
   PATH_NOT_FOUND_TEXT,
-  REQUEST_ERROR_TEXT: BAD_REQUEST_TEXT,
+  BAD_REQUEST_TEXT,
   CARD_NOT_FOUND_TEXT,
   CARD_RESTRICTED_TEXT,
   CARD_DELETED_TEXT,
   WRONG_ID_TEXT,
   EMAIL_EXIST_TEXT,
   USER_NOT_FOUND_TEXT,
-  WRONG_GREDENTIALS_TEXT,
+  WRONG_CREDENTIALS_TEXT,
+  TOKEN_EXPIRED_TEXT,
 
   TOKEN_PREFIX,
   SALT_ROUNDS,

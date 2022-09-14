@@ -7,6 +7,11 @@ const {
   JWT_SECRET = '41f2274f52d9ad3f094d4378b763b7ad2e870e4a1a283c59c1d91a0a0336b026',
 } = process.env;
 
+const User = require('../models/user');
+
+const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/ConflictError');
+
 const {
   CREATED,
   SALT_ROUNDS,
@@ -15,9 +20,6 @@ const {
   BAD_REQUEST_TEXT,
   DB_DUPLICATE_KEY_CODE,
 } = require('../utils/constants');
-const User = require('../models/user');
-const BadRequestError = require('../errors/BadRequestError');
-const ConflictError = require('../errors/ConflictError');
 
 const createUser = (req, res, next) => {
   const {
@@ -55,6 +57,7 @@ const login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: JWT_EXPIRATION_TIMEOUT,
       });
+
       res.send({ token });
     })
     .catch((err) => {

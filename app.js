@@ -2,6 +2,7 @@ require('dotenv').config();
 const process = require('process');
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 const { requestLogger } = require('./utils/loggers');
 const globalErrorHandler = require('./middlewares/globalErrorHandler');
@@ -9,7 +10,7 @@ const publicRouter = require('./routers/auth');
 const authorize = require('./middlewares/authorize');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
-const notFoundError = require('./controllers/notFound');
+const notFoundHandler = require('./controllers/notFound');
 const {
   DB_CONNECTED_TEXT,
   SERVER_STARTED_TEXT,
@@ -32,8 +33,8 @@ app.use(authorize);
 app.use(userRouter); // app.js <= /routes <= /controllers <= /models
 app.use(cardsRouter);
 
-app.use(notFoundError);
-app.use(globalErrorHandler);
+app.use(notFoundHandler);
+app.use(errors());
 
 async function main() {
   try {
@@ -48,3 +49,5 @@ async function main() {
 }
 
 main();
+
+app.use(globalErrorHandler);
