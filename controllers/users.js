@@ -1,62 +1,57 @@
-const {
-  CREATED,
-  BAD_REQUEST,
-  NOT_FOUND,
-  SERVER_ERROR,
-} = require('../utils/constants');
 const User = require('../models/user');
 
-const getAllUsers = (req, res) => {
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+
+const {
+  USER_NOT_FOUND_TEXT,
+  WRONG_ID_TEXT,
+  BAD_REQUEST_TEXT,
+} = require('../utils/constants');
+
+const getAllUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => {
-      res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
-      });
+    .catch((err) => {
+      next(err);
     });
 };
 
-const getUserById = (req, res) => {
-  const { userId } = req.params;
-  User.findById(userId)
+const getUserById = (req, res, next) => {
+  const { id } = req.params;
+  User.findById(id)
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
-        return;
+        throw new NotFoundError(USER_NOT_FOUND_TEXT);
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Неверный ID', error: err.message });
-        return;
+        next(new BadRequestError(WRONG_ID_TEXT));
       }
-      res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
-      });
+      next(err);
     });
 };
 
-const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.status(CREATED).send(user))
+const getCurrentUser = (req, res, next) => {
+  const id = req.user._id;
+  User.findById(id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError(USER_NOT_FOUND_TEXT);
+      }
+      res.send(user);
+    })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Ошибка в запросе', error: err.message });
-        return;
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError(WRONG_ID_TEXT));
       }
-      res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
-      });
+      next(err);
     });
 };
 
-const updateUser = (req, res) => {
+const updateUser = (req, res, next) => {
   const id = req.user._id;
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -69,31 +64,28 @@ const updateUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
         return;
       }
-      res.send(user);
+      res.send({
+        name: user.name,
+        about: user.about,
+      });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Ошибка в запросе', error: err.message });
+        next(new BadRequestError(BAD_REQUEST_TEXT));
         return;
       }
       if (err.kind === 'ObjectId') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Неверный ID', error: err.message });
+        next(new BadRequestError(WRONG_ID_TEXT));
         return;
       }
-      res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
-      });
+      next(err);
     });
 };
 
-const updateUserAvatar = (req, res) => {
+const updateUserAvatar = (req, res, next) => {
   const id = req.user._id;
   const { avatar } = req.body;
   User.findByIdAndUpdate(
@@ -106,28 +98,28 @@ const updateUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
         return;
       }
-      res.send(user);
+      res.send({ avatar: user.avatar });
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
-        res
-          .status(BAD_REQUEST)
-          .send({ message: 'Неверный ID', error: err.message });
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError(BAD_REQUEST_TEXT));
         return;
       }
-      res.status(SERVER_ERROR).send({
-        message: 'Сервер не смог обработать запрос',
-      });
+      if (err.kind === 'ObjectId') {
+        next(new BadRequestError(WRONG_ID_TEXT));
+        return;
+      }
+      next(err);
     });
 };
 
 module.exports = {
   getAllUsers,
   getUserById,
-  createUser,
+  getCurrentUser,
   updateUser,
   updateUserAvatar,
 };
