@@ -1,43 +1,53 @@
+require('dotenv').config();
 const process = require('process');
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 const { requestLogger } = require('./utils/loggers');
+const globalErrorHandler = require('./middlewares/globalErrorHandler');
+const publicRouter = require('./routers/auth');
+const authorize = require('./middlewares/authorize');
 const userRouter = require('./routers/users');
 const cardsRouter = require('./routers/cards');
-const notFoundRouter = require('./routers/404');
+const notFoundHandler = require('./controllers/notFound');
+const {
+  DB_CONNECTED_TEXT,
+  SERVER_STARTED_TEXT,
+  DB_NOT_CONNECTED_TEXT,
+  SERVER_START_FAILED_TEXT,
+} = require('./utils/constants');
+
+const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
 const app = express();
-const { PORT = 3000 } = process.env;
 
 app.use(requestLogger);
 
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(express.urlencoded({ extended: true }));
 
-// hardcoded user id
-app.use((req, res, next) => {
-  req.user = {
-    _id: '630d25a903576ab62032ca24',
-  };
-
-  next();
-});
+app.use(publicRouter);
+app.use(authorize);
 
 app.use(userRouter); // app.js <= /routes <= /controllers <= /models
 app.use(cardsRouter);
-app.use(notFoundRouter);
+
+app.use(notFoundHandler);
+app.use(errors());
 
 async function main() {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-    console.log('Database connected');
+    await mongoose.connect(DB_ADDRESS);
+    console.log(DB_CONNECTED_TEXT);
     await app.listen(PORT);
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`${SERVER_STARTED_TEXT} ${PORT}`);
   } catch (err) {
-    console.error('Database not connected \nERROR:', err);
-    console.error('Server not started');
+    console.log(DB_NOT_CONNECTED_TEXT, err);
+    console.log(SERVER_START_FAILED_TEXT);
   }
 }
 
 main();
+
+app.use(globalErrorHandler);
