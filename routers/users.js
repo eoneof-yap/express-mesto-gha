@@ -14,10 +14,14 @@ const {
   validateUserAvatar,
 } = require('../middlewares/validators');
 
-usersRouter.get('/users', getAllUsers);
-usersRouter.get('/users/me', getCurrentUser);
-usersRouter.get('/users/:id', validateId, getUserById);
-usersRouter.patch('/users/me', validateUserInfo, updateUser);
-usersRouter.patch('/users/me/avatar', validateUserAvatar, updateUserAvatar);
+const { methodsNotAllowed } = require('../utils/utils');
+
+usersRouter
+  .get('/users', getAllUsers)
+  .get('/users/me', getCurrentUser)
+  .get('/users/:id', validateId, getUserById)
+  .patch('/users/me', validateUserInfo, updateUser)
+  .patch('/users/me/avatar', validateUserAvatar, updateUserAvatar)
+  .all('*', methodsNotAllowed);
 
 module.exports = usersRouter;

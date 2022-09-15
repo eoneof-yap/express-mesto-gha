@@ -9,11 +9,14 @@ const {
 } = require('../controllers/cards');
 
 const { validateId, validateCardData } = require('../middlewares/validators');
+const { methodsNotAllowed } = require('../utils/utils');
 
-cardsRouter.get('/cards', getAllCards);
-cardsRouter.post('/cards', validateCardData, createCard);
-cardsRouter.delete('/cards/:id', validateId, deleteCard);
-cardsRouter.put('/cards/:id/likes', validateId, likeCard);
-cardsRouter.delete('/cards/:id/likes', validateId, unlikeCard);
+cardsRouter
+  .get('/cards', getAllCards)
+  .post('/cards', validateCardData, createCard)
+  .delete('/cards/:id', validateId, deleteCard)
+  .put('/cards/:id/likes', validateId, likeCard)
+  .delete('/cards/:id/likes', validateId, unlikeCard)
+  .all('*', methodsNotAllowed);
 
 module.exports = cardsRouter;
