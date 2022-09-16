@@ -7,7 +7,7 @@
     "start": "node app.js",
     "dev": "nodemon app.js",
     "lint": "npx eslint .",
-    "lintfix": "npx eslint . --fix"
+    "lint:fix": "npx eslint . --fix"
   },
   "keywords": [
     "backend",
