@@ -29,6 +29,7 @@ const createCard = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError(BAD_REQUEST_TEXT));
       }
+      next(err);
     });
 };
 
@@ -51,7 +52,6 @@ const deleteCard = (req, res, next) => {
         next(BadRequestError(WRONG_ID_TEXT));
         return;
       }
-
       next(err);
     });
 };
