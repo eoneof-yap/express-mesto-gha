@@ -37,10 +37,12 @@ const deleteCard = (req, res, next) => {
   Card.findById(id)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(CARD_NOT_FOUND_TEXT);
+        next(new NotFoundError(CARD_NOT_FOUND_TEXT));
+        return;
       }
       if (req.user._id !== card.owner.toString()) {
-        throw new ForbiddenError(CARD_RESTRICTED_TEXT);
+        next(new ForbiddenError(CARD_RESTRICTED_TEXT));
+        return;
       }
       card.delete().then(res.send({ message: CARD_DELETED_TEXT }));
     })
