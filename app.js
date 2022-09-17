@@ -5,25 +5,24 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
 
-const { requestLogger } = require('./utils/loggers');
-const globalErrorHandler = require('./middlewares/globalErrorHandler');
-const notFoundHandler = require('./controllers/notFound');
+const app = express();
+const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
 const routers = require('./routers/routers');
+const notFoundHandler = require('./controllers/notFound');
+const globalErrorHandler = require('./middlewares/globalErrorHandler');
+const { requestLogger, eventLogger, errorLogger } = require('./utils/loggers');
+
 const {
   DB_CONNECTED_TEXT,
   SERVER_STARTED_TEXT,
   DB_NOT_CONNECTED_TEXT,
   SERVER_START_FAILED_TEXT,
 } = require('./utils/constants');
-
-const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
-
-const app = express();
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
 
 app.use(limiter);
 app.use(requestLogger);
@@ -39,12 +38,12 @@ app.use(errors());
 async function main() {
   try {
     await mongoose.connect(DB_ADDRESS);
-    console.log(DB_CONNECTED_TEXT);
+    eventLogger(DB_CONNECTED_TEXT);
     await app.listen(PORT);
-    console.log(`${SERVER_STARTED_TEXT} ${PORT}`);
+    eventLogger(`${SERVER_STARTED_TEXT} ${PORT}`);
   } catch (err) {
-    console.log(DB_NOT_CONNECTED_TEXT, err);
-    console.log(SERVER_START_FAILED_TEXT);
+    errorLogger(DB_NOT_CONNECTED_TEXT);
+    errorLogger(SERVER_START_FAILED_TEXT);
   }
 }
 
@@ -53,7 +52,7 @@ main();
 app.use(globalErrorHandler);
 
 process.on('uncaughtException', (err, origin) => {
-  console.warn(
+  errorLogger(
     `${origin} ${err.name} c текстом ${err.message} не была обработана. Обратите внимание!`,
   );
 });
