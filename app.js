@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const app = express();
 const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
@@ -25,6 +26,7 @@ const {
 } = require('./utils/constants');
 
 app.use(limiter);
+app.use(helmet.hidePoweredBy());
 app.use(requestLogger);
 
 app.use(express.json()); // body-parser is bundled with Express >4.16
