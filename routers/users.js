@@ -8,20 +8,11 @@ const {
   updateUserAvatar,
 } = require('../controllers/users');
 
-const {
-  validateId,
-  validateUserInfo,
-  validateUserAvatar,
-} = require('../middlewares/validators');
+const { validateId, validateUserInfo, validateUserAvatar } = require('../middlewares/validators');
 
-const { methodsNotAllowed } = require('../utils/utils');
-
-usersRouter
+module.exports = usersRouter
   .get('/users', getAllUsers)
   .get('/users/me', getCurrentUser)
   .get('/users/:id', validateId, getUserById)
   .patch('/users/me', validateUserInfo, updateUser)
-  .patch('/users/me/avatar', validateUserAvatar, updateUserAvatar)
-  .all('*', methodsNotAllowed);
-
-module.exports = usersRouter;
+  .patch('/users/me/avatar', validateUserAvatar, updateUserAvatar);

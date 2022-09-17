@@ -6,11 +6,8 @@ const { errors } = require('celebrate');
 
 const { requestLogger } = require('./utils/loggers');
 const globalErrorHandler = require('./middlewares/globalErrorHandler');
-const publicRouter = require('./routers/auth');
-const authorize = require('./middlewares/authorize');
-const userRouter = require('./routers/users');
-const cardsRouter = require('./routers/cards');
 const notFoundHandler = require('./controllers/notFound');
+const routers = require('./routers/routers');
 const {
   DB_CONNECTED_TEXT,
   SERVER_STARTED_TEXT,
@@ -27,11 +24,7 @@ app.use(requestLogger);
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(express.urlencoded({ extended: true }));
 
-app.use(publicRouter);
-app.use(authorize);
-
-app.use(userRouter); // app.js <= /routes <= /controllers <= /models
-app.use(cardsRouter);
+app.use(routers);
 
 app.use(notFoundHandler);
 app.use(errors());
