@@ -51,3 +51,9 @@ async function main() {
 main();
 
 app.use(globalErrorHandler);
+
+process.on('uncaughtException', (err, origin) => {
+  console.warn(
+    `${origin} ${err.name} c текстом ${err.message} не была обработана. Обратите внимание!`,
+  );
+});
