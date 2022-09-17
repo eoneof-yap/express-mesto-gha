@@ -3,6 +3,7 @@ const process = require('process');
 const express = require('express');
 const mongoose = require('mongoose');
 const { errors } = require('celebrate');
+const rateLimit = require('express-rate-limit');
 
 const { requestLogger } = require('./utils/loggers');
 const globalErrorHandler = require('./middlewares/globalErrorHandler');
@@ -19,6 +20,12 @@ const { PORT = 3000, DB_ADDRESS = 'mongodb://127.0.0.1:27017/mestodb' } = proces
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+
+app.use(limiter);
 app.use(requestLogger);
 
 app.use(express.json()); // body-parser is bundled with Express >4.16
