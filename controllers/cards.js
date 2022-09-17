@@ -15,7 +15,6 @@ const {
 
 const getAllCards = (req, res, next) => {
   Card.find({})
-    .populate('owner')
     .then((cards) => res.send(cards))
     .catch((err) => {
       next(err);
@@ -28,10 +27,10 @@ const createCard = (req, res, next) => {
     .then((card) => res.status(CREATED).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError(BAD_REQUEST_TEXT);
+        next(new BadRequestError(BAD_REQUEST_TEXT));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -40,10 +39,12 @@ const deleteCard = (req, res, next) => {
   Card.findById(id)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(CARD_NOT_FOUND_TEXT);
+        next(new NotFoundError(CARD_NOT_FOUND_TEXT));
+        return;
       }
       if (req.user._id !== card.owner.toString()) {
-        throw new ForbiddenError(CARD_RESTRICTED_TEXT);
+        next(new ForbiddenError(CARD_RESTRICTED_TEXT));
+        return;
       }
       card.delete().then(res.send({ message: CARD_DELETED_TEXT }));
     })
@@ -52,7 +53,6 @@ const deleteCard = (req, res, next) => {
         next(BadRequestError(WRONG_ID_TEXT));
         return;
       }
-
       next(err);
     });
 };

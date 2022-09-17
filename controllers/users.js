@@ -22,7 +22,8 @@ const getUserById = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(USER_NOT_FOUND_TEXT);
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
+        return;
       }
       res.send(user);
     })
@@ -39,7 +40,8 @@ const getCurrentUser = (req, res, next) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(USER_NOT_FOUND_TEXT);
+        next(new NotFoundError(USER_NOT_FOUND_TEXT));
+        return;
       }
       res.send(user);
     })

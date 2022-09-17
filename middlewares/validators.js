@@ -2,12 +2,12 @@ const { celebrate, Joi } = require('celebrate');
 
 // eslint-disable-next-line no-useless-escape
 const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/i;
-const idConfig = Joi.string().alphanum().length(24);
+const idConfig = Joi.string().alphanum().length(24).hex();
 const userNameConfig = Joi.string().min(2).max(30);
 const userAboutConfig = Joi.string().min(2).max(30);
 const avatarConfig = Joi.string().regex(urlRegex);
 const emailConfig = Joi.string().required().email();
-const passwordConfig = Joi.string().required().min(8);
+const passwordConfig = Joi.string().required();
 const cardNameConfig = Joi.string().required().min(2).max(30);
 const urlConfig = Joi.string().required().regex(urlRegex);
 
